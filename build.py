@@ -42,6 +42,8 @@ TITLE = "高性价比饮食指南"
 SUBTITLE = "用最少的钱、时间和毅力，换回最多的健康"
 # 发布到 GitHub 后把这里换成你的仓库地址（顶栏图标 / README / PDF 下载会指向它）
 REPO = "https://github.com/kexin1409/how-to-eat-better"
+# PDF 用 Pages 地址直链：浏览器原生打开预览并可另存，避开 GitHub 网页端 PDF 预览抽风
+PDF_URL = "https://kexin1409.github.io/how-to-eat-better/how-to-eat-better.pdf"
 
 RE_SEC = re.compile(r"^#\s+(.*)$")
 RE_ENTRY = re.compile(r"^###\s+(\d+)\.\s*(.*)$")
@@ -847,7 +849,7 @@ def main():
     <div class="pdfbar" id="pdfbar" hidden>
       <span class="ic" aria-hidden="true">📄</span>
       <span class="txt">这本书也出了 <b>PDF 版</b>（62 页，可打印、离线读、随手做批注）。想留一份慢慢看？</span>
-      <a class="dl" href="%(repo)s/raw/main/how-to-eat-better.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>点击下载 PDF</a>
+      <a class="dl" href="%(pdf)s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>点击下载 PDF</a>
       <button class="x" id="pdfbarX" aria-label="关闭提示">×</button>
     </div>
     <div class="doc-head">
@@ -882,7 +884,7 @@ def main():
         "r3": stats["极高"], "r2": stats["高"], "r1": stats["一般"],
         "links": stats["links"], "css": CSS, "js": JS,
         "sidebar": sidebar, "blocks": "".join(blocks),
-        "repo": REPO, "now": now,
+        "repo": REPO, "pdf": PDF_URL, "now": now,
         "rev": ("，正文版本 %s" % rev) if rev else "",
     }
 

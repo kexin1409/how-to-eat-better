@@ -2,7 +2,11 @@
 
 一个单文件 HTML 阅读页，把《高性价比饮食指南》的各节条目渲染成可搜索的页面。手机上打开就能看，不用装任何东西，断网也能读。
 
-**在线阅读：** <https://kexin1409.github.io/how-to-eat-better/>（把仓库设置里的 Pages 打开即可：Settings → Pages → Deploy from a branch → main / root）
+**在线阅读：** <https://kexin1409.github.io/how-to-eat-better/>
+
+**PDF 版（62 页，可直接在浏览器打开/另存）：** <https://kexin1409.github.io/how-to-eat-better/how-to-eat-better.pdf>
+
+> 提示：GitHub 仓库文件页对 PDF 的在线预览经常报「Unable to render code block」，且 `raw.githubusercontent.com` 在部分网络下无法直连。上面两个链接都走 GitHub Pages 域名，国内网络一般可直接打开；在仓库文件页里请用右上角「Download raw file」按钮下载。
 
 ## 这是什么
 
