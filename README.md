@@ -2,7 +2,7 @@
 
 一个单文件 HTML 阅读页，把《高性价比饮食指南》的各节条目渲染成可搜索的页面。手机上打开就能看，不用装任何东西，断网也能读。
 
-**在线阅读：** <https://你的用户名.github.io/how-to-eat-better/>（把仓库设置里的 Pages 打开即可：Settings → Pages → Deploy from a branch → main / root）
+**在线阅读：** <https://kexin1409.github.io/how-to-eat-better/>（把仓库设置里的 Pages 打开即可：Settings → Pages → Deploy from a branch → main / root）
 
 ## 这是什么
 
