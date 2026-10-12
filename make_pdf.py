@@ -103,8 +103,14 @@ def register_fonts():
             if name in got:
                 break
         if name not in got:
-            raise RuntimeError("找不到中文字体：%s（搜索目录：%s，模式：%s）"
-                               % (name, roots, pats))
+            # 兜底：粗体/衬线找不到就复用已有字体文件（标题只是不更粗，不会报错）
+            fallback = {"YHB": "YH", "Hei": "YHB", "Song": "YH"}.get(name)
+            if fallback and fallback in got:
+                pdfmetrics.registerFont(TTFont(name, got[fallback], subfontIndex=0))
+                got[name] = got[fallback] + " (fallback)"
+            else:
+                raise RuntimeError("找不到中文字体：%s（搜索目录：%s，模式：%s）"
+                                   % (name, roots, pats))
     print("fonts:", got)
     # 宋体正文的 <b> 用黑体顶上
     registerFontFamily("Song", normal="Song", bold="Hei",
