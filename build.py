@@ -89,6 +89,7 @@ def parse(path):
         m = RE_SEC.match(line)
         if m and not entries and not title:
             title = m.group(1).strip()
+            title = re.sub(r"^\d+[.、]\s*", "", title)  # 正文标题自带编号，渲染时统一再加，避免“1. 1.”重复
             continue
         m = RE_ENTRY.match(line)
         if m:
