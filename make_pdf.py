@@ -84,30 +84,37 @@ def register_fonts():
         "Hei": ["simhei.ttf", "msyhbd.ttc", "NotoSansCJK-Bold.ttc",
                 "NotoSansCJK-Bold.*", "NotoSansCJK*.ttc"],
     }
-    got = {}
+    got = {}       # name -> 显示用来源
+    real = {}      # name -> 真实字体文件路径（注册回退时用，避免带后缀的展示串）
     for name, pats in cands.items():
         for pat in pats:
             for root in roots:
                 rp = Path(root)
                 if not rp.is_dir():
                     continue
-                hits = sorted(rp.rglob(pat))
+                try:
+                    hits = sorted(rp.rglob(pat))
+                except OSError:
+                    continue
                 if not hits:
                     continue
                 try:
                     pdfmetrics.registerFont(TTFont(name, str(hits[0]), subfontIndex=0))
                     got[name] = str(hits[0])
+                    real[name] = str(hits[0])
                     break
                 except Exception:
+                    # reportlab 的 TTFont 不支持 CFF 轮廓（如 Noto CJK），换下一个候选
                     continue
             if name in got:
                 break
         if name not in got:
             # 兜底：粗体/衬线找不到就复用已有字体文件（标题只是不更粗，不会报错）
             fallback = {"YHB": "YH", "Hei": "YHB", "Song": "YH"}.get(name)
-            if fallback and fallback in got:
-                pdfmetrics.registerFont(TTFont(name, got[fallback], subfontIndex=0))
-                got[name] = got[fallback] + " (fallback)"
+            if fallback and fallback in real:
+                pdfmetrics.registerFont(TTFont(name, real[fallback], subfontIndex=0))
+                got[name] = real[fallback] + " (fallback)"
+                real[name] = real[fallback]
             else:
                 raise RuntimeError("找不到中文字体：%s（搜索目录：%s，模式：%s）"
                                    % (name, roots, pats))
