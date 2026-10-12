@@ -63,34 +63,49 @@ TOTAL = [0]  # 正文总页数（两遍构建时回填，用于页脚「N / 总�
 # ---------------------------------------------------------------- 字体
 
 def register_fonts():
-    """Windows 用微软雅黑/宋体/黑体；Linux(CI) 回退到 Noto CJK / 文泉驿。"""
-    win = Path("C:/Windows/Fonts")
-    nix = Path("/usr/share/fonts")
+    """按文件名模式在常见字体目录里搜索：Windows 用雅黑/宋体，Linux/macOS
+    回退到 Noto CJK、文泉驿等，不依赖具体发行版的安装路径。"""
+    roots = [
+        "C:/Windows/Fonts",
+        "/usr/share/fonts",
+        "/usr/local/share/fonts",
+        str(Path.home() / ".fonts"),
+        "/System/Library/Fonts",
+        "/System/Library/Fonts/Supplemental",
+    ]
     cands = {
-        "YH":  [win / "msyh.ttc", win / "msyh.ttf",
-                nix / "opentype/noto/NotoSansCJK-Regular.ttc",
-                nix / "truetype/wqy/wqy-microhei.ttc"],
-        "YHB": [win / "msyhbd.ttc", win / "msyh.ttf",
-                nix / "opentype/noto/NotoSansCJK-Bold.ttc",
-                nix / "opentype/noto/NotoSansCJK-Regular.ttc"],
-        "Song": [win / "simsun.ttc", win / "songti.ttf",
-                 nix / "opentype/noto/NotoSerifCJK-Regular.ttc",
-                 nix / "opentype/noto/NotoSansCJK-Regular.ttc"],
-        "Hei": [win / "simhei.ttf", win / "msyhbd.ttc",
-                nix / "opentype/noto/NotoSansCJK-Bold.ttc"],
+        "YH":  ["msyh.ttc", "msyh.ttf", "NotoSansCJK-Regular.ttc",
+                "NotoSansCJK-Regular.*", "NotoSansCJK*.ttc", "wqy-microhei.ttc",
+                "wqy*.ttc", "DroidSansFallbackFull.ttf"],
+        "YHB": ["msyhbd.ttc", "NotoSansCJK-Bold.ttc", "NotoSansCJK-Bold.*",
+                "NotoSansCJK*.ttc", "msyh.ttc"],
+        "Song": ["simsun.ttc", "NotoSerifCJK-Regular.ttc", "NotoSerifCJK-Regular.*",
+                 "NotoSerifCJK*.ttc", "NotoSansCJK-Regular.ttc", "NotoSansCJK*.ttc"],
+        "Hei": ["simhei.ttf", "msyhbd.ttc", "NotoSansCJK-Bold.ttc",
+                "NotoSansCJK-Bold.*", "NotoSansCJK*.ttc"],
     }
     got = {}
-    for name, paths in cands.items():
-        for p in paths:
-            if p.exists():
+    for name, pats in cands.items():
+        for pat in pats:
+            for root in roots:
+                rp = Path(root)
+                if not rp.is_dir():
+                    continue
+                hits = sorted(rp.rglob(pat))
+                if not hits:
+                    continue
                 try:
-                    pdfmetrics.registerFont(TTFont(name, str(p), subfontIndex=0))
-                    got[name] = True
+                    pdfmetrics.registerFont(TTFont(name, str(hits[0]), subfontIndex=0))
+                    got[name] = str(hits[0])
                     break
                 except Exception:
                     continue
+            if name in got:
+                break
         if name not in got:
-            raise RuntimeError("找不到中文字体：%s（tried %s）" % (name, paths))
+            raise RuntimeError("找不到中文字体：%s（搜索目录：%s，模式：%s）"
+                               % (name, roots, pats))
+    print("fonts:", got)
     # 宋体正文的 <b> 用黑体顶上
     registerFontFamily("Song", normal="Song", bold="Hei",
                        italic="Song", boldItalic="Hei")

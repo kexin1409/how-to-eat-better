@@ -20,7 +20,7 @@ jobs:
       - name: 安装 PDF 依赖
         run: pip install reportlab
       - name: 安装中文字体
-        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk fonts-wqy-microhei
       - name: 生成单文件阅读页
         run: python build.py -o index.html
       - name: 生成 PDF
