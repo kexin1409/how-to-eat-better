@@ -40,8 +40,8 @@ BOOK = ROOT / "book"
 OUT_DEFAULT = ROOT / "index.html"
 TITLE = "高性价比饮食指南"
 SUBTITLE = "用最少的钱、时间和毅力，换回最多的健康"
-# 发布到 GitHub 后把这里换成你的仓库地址（顶栏图标会指向它）
-REPO = "https://github.com/你的用户名/how-to-eat-better"
+# 发布到 GitHub 后把这里换成你的仓库地址（顶栏图标 / README / PDF 下载会指向它）
+REPO = "https://github.com/kexin1409/how-to-eat-better"
 
 RE_SEC = re.compile(r"^#\s+(.*)$")
 RE_ENTRY = re.compile(r"^###\s+(\d+)\.\s*(.*)$")
@@ -382,6 +382,18 @@ html.dark .switch .knob{transform:translateX(18px)}
 .switch .sun{display:block} .switch .moon{display:none}
 html.dark .switch .sun{display:none} html.dark .switch .moon{display:block}
 .menu-btn{display:none}
+/* PDF 下载横幅（正文内卡片） */
+.pdfbar{display:flex;align-items:center;gap:12px;margin:0 0 22px;padding:12px 16px;border:1px solid var(--brand-3);border-radius:12px;background:var(--brand-soft);font-size:14px;color:var(--t1)}
+.pdfbar .ic{font-size:19px;line-height:1;flex:none}
+.pdfbar .txt{flex:1;min-width:0}
+.pdfbar b{color:var(--brand-1)}
+.pdfbar a.dl{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;background:var(--brand-1);color:#fff;font-weight:600;white-space:nowrap;flex:none;transition:background .2s,transform .1s}
+.pdfbar a.dl:hover{background:var(--brand-2);text-decoration:none}
+.pdfbar a.dl:active{transform:translateY(1px)}
+.pdfbar a.dl svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pdfbar .x{margin-left:2px;width:28px;height:28px;border-radius:7px;color:var(--t3);font-size:20px;line-height:1;display:grid;place-items:center;flex:none;transition:background .2s,color .2s}
+.pdfbar .x:hover{background:var(--bg-soft);color:var(--t1)}
+@media(max-width:640px){.pdfbar{flex-wrap:wrap;gap:8px 10px;padding:11px 14px}.pdfbar .txt{order:2;flex-basis:100%;font-size:13px}.pdfbar a.dl{order:1}.pdfbar .x{order:0;margin-left:auto}}
 
 /* sidebar */
 .sidebar{position:fixed;top:var(--nav-h);bottom:0;left:0;width:var(--side-w);background:var(--bg-alt);padding:32px 32px 96px;overflow-y:auto;overscroll-behavior:contain;z-index:20}
@@ -507,6 +519,18 @@ JS = r"""
     try{localStorage.setItem('theme',d?'dark':'light')}catch(e){}
   }
   if(sw)sw.addEventListener('click',function(){setTheme(!root.classList.contains('dark'))});
+
+  /* ---------- PDF 下载横幅 ---------- */
+  var pdfbar=$('#pdfbar'), pdfbarX=$('#pdfbarX');
+  if(pdfbar){
+    var dismissed=false;
+    try{dismissed=localStorage.getItem('pdfbar-dismissed')==='1'}catch(e){}
+    if(!dismissed)pdfbar.hidden=false;
+    if(pdfbarX)pdfbarX.addEventListener('click',function(){
+      pdfbar.hidden=true;
+      try{localStorage.setItem('pdfbar-dismissed','1')}catch(e){}
+    });
+  }
 
   /* ---------- 筛选状态 ---------- */
   var DIMS=['sec','ratio','grade','money','time','will'];
@@ -820,6 +844,12 @@ def main():
 
 <main class="content">
   <div class="doc">
+    <div class="pdfbar" id="pdfbar" hidden>
+      <span class="ic" aria-hidden="true">📄</span>
+      <span class="txt">这本书也出了 <b>PDF 版</b>（62 页，可打印、离线读、随手做批注）。想留一份慢慢看？</span>
+      <a class="dl" href="%(repo)s/raw/main/how-to-eat-better.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>点击下载 PDF</a>
+      <button class="x" id="pdfbarX" aria-label="关闭提示">×</button>
+    </div>
     <div class="doc-head">
       <h1>%(title)s</h1>
       <p>每一条都回答两个问题：花掉什么，换回什么。</p>
