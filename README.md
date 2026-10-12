@@ -50,6 +50,15 @@ python build.py -o out.html    # 指定输出文件
 
 零第三方依赖，Python 3.8+ 直接跑。统计数字（条目数、A/B/C、性价比三档）由脚本实时统计，写在页面页脚。
 
+生成 PDF 版（需要 `pip install reportlab`，字体用系统自带中文字体，Windows/Linux 均可）：
+
+```
+python make_pdf.py                # 输出 how-to-eat-better.pdf
+python make_pdf.py -o out.pdf     # 指定输出文件
+```
+
+PDF 的封面、目录、前言、页眉页脚和书签由 `make_pdf.py` 自动生成，正文与统计数字同样来自 `book/` 与 `build.py` 的解析逻辑，两版内容永远一致。正文每次更新后，GitHub Actions 会同时重新生成 HTML 和 PDF 并自动提交。
+
 改过页面交互脚本（`build.py` 里内嵌的 CSS/JS）后，跑一遍回归测试：
 
 ```
